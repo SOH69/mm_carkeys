@@ -57,7 +57,8 @@ function Bridge:GetPlayerItemsByName(src, item)
     if Shared.Inventory == 'ox' then
         return exports.ox_inventory:GetSlotsWithItem(src, item)
     elseif Shared.Inventory == 'qb' then
-        return exports.mm_inventory:GetItemsByName(src, item)
+        local Player = self:GetPlayer(src)
+        return Player.Functions.GetItemsByName(src, item)
     end
 end
 
@@ -65,7 +66,8 @@ function Bridge:GetPlayerItemByName(src, item)
     if Shared.Inventory == 'ox' then
         return exports.ox_inventory:GetSlotWithItem(src, item)
     elseif Shared.Inventory == 'qb' then
-        return exports.mm_inventory:GetItemByName(src, item)
+        local Player = self:GetPlayer(src)
+        return Player.Functions.GetItemByName(src, item)
     end
 end
 
@@ -79,7 +81,8 @@ function Bridge:RemovePlayerKeyItem(src, info)
             end
         elseif Shared.Inventory == 'qb' then
             if lib.table.matches(v.info, info) then
-                exports.mm_inventory:RemoveItem(src, 'vehiclekey', 1, v.slot)
+                local Player = self:GetPlayer(src)
+                Player.Functions.RemoveItem(src, 'vehiclekey', 1, v.slot)
                 TriggerClientEvent("inventory:client:ItemBox", src, QBCore.Shared.Items["vehiclekey"], "remove")
                 return true
             end

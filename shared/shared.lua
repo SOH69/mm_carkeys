@@ -1,8 +1,8 @@
 Shared = {
-    LockNPCVehicle = true,
-    playerDraggable = true,
+    LockNPCVehicle = true, -- lock all npc vehicles
+    playerDraggable = true, -- allow players to drag other players
     steal = {
-        available = true,
+        available = true, -- allow players to carjack vehicles
         label = 'Stealing Vehicle...',
         minTime = 5000,
         maxTime = 7000,
@@ -19,12 +19,12 @@ Shared = {
             ['4257178988'] = 0.0, -- misc
         }
     },
-    grab = {
+    grab = { -- grab a dead npc out of a vehicle
         label = 'Robbing Vehicle...',
         minTime = 5000,
         maxTime = 7000,
     },
-    hotwire = {
+    hotwire = { -- hotwire a vehicle
         label = 'Hotwiring Vehicle...',
         chance = 1.0,
         minTime = 2000,
