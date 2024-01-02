@@ -1,7 +1,11 @@
 fx_version "cerulean"
-use_experimental_fxv2_oal 'yes'
-lua54 'yes'
 game 'gta5'
+use_experimental_fxv2_oal 'yes'
+
+author "Master Mind"
+version '1.0.1'
+
+lua54 'yes'
 
 shared_scripts {
     '@ox_lib/init.lua',
@@ -25,3 +29,5 @@ files {
     'client/modules/*.lua',
     'server/bridge.lua',
 }
+
+dependency 'ox_lib'
