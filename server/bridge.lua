@@ -58,7 +58,7 @@ function Bridge:GetPlayerItemsByName(src, item)
         return exports.ox_inventory:GetSlotsWithItem(src, item)
     elseif Shared.Inventory == 'qb' then
         local Player = self:GetPlayer(src)
-        return Player.Functions.GetItemsByName(src, item)
+        return Player.Functions.GetItemsByName(item)
     end
 end
 
@@ -67,7 +67,7 @@ function Bridge:GetPlayerItemByName(src, item)
         return exports.ox_inventory:GetSlotWithItem(src, item)
     elseif Shared.Inventory == 'qb' then
         local Player = self:GetPlayer(src)
-        return Player.Functions.GetItemByName(src, item)
+        return Player.Functions.GetItemByName(item)
     end
 end
 
