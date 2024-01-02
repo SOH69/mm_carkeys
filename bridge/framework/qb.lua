@@ -30,6 +30,17 @@ if Shared.Framework == 'qb' then
         end
     end)
 
+    AddEventHandler('vehiclekeys:client:SetOwner', function(plate)
+        if not plate then
+            return lib.notify({
+                title = 'Failed',
+                description = 'No Vehicle Plate Found',
+                type = 'error'
+            })
+        end
+        TriggerServerEvent('mm_carkeys:server:acquiretempvehiclekeys', plate)
+    end)
+
     if Shared.Inventory == 'qb' then
         RegisterNetEvent('QBCore:Player:SetPlayerData', function(val)
             playerItems = val.items
