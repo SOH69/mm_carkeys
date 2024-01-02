@@ -6,6 +6,7 @@ Shared = {
         label = 'Stealing Vehicle...',
         minTime = 5000,
         maxTime = 7000,
+        stressIncrease = math.random(1, 3),
         chance = {
             ['2685387236'] = 0.0, -- melee
             ['416676503'] = 0.5, -- handguns
@@ -19,6 +20,11 @@ Shared = {
             ['4257178988'] = 0.0, -- misc
         }
     },
+    lockpick = {
+        stressIncrease = math.random(1, 3),
+        breakChance = 0.5,
+        advancedBreakChance = 0.1
+    },
     grab = { -- grab a dead npc out of a vehicle
         label = 'Robbing Vehicle...',
         minTime = 5000,
@@ -29,6 +35,7 @@ Shared = {
         chance = 1.0,
         minTime = 2000,
         maxTime = 3000,
+        stressIncrease = math.random(1, 3)
     },
     BlackListedWeapon = {
         "WEAPON_UNARMED",

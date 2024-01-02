@@ -67,26 +67,26 @@ function Steal:CarjackVehicle(target)
         ClearPedTasks(target)
         Wait(1000)
         TaskReactAndFleePed(target, cache.ped)
-        TriggerServerEvent('hud:server:GainStress', math.random(1, 4))
+        TriggerServerEvent('hud:server:GainStress', Shared.steal.stressIncrease)
         if math.random() <= carjackChance then
             lib.notify({
                 title = 'Failed',
                 description = 'Cannot retrive the keys!',
                 type = 'error'
             })
-            TriggerServerEvent('hud:server:GainStress', math.random(1, 4))
+            TriggerServerEvent('hud:server:GainStress', Shared.steal.stressIncrease)
             self:CarjackInit()
             return
         end
         lib.requestAnimDict('mp_common')
         TaskPlayAnim(target, "mp_common", "givetake1_a", 8.0, -8, -1, 12, 1, false, false, false)
-        TriggerServerEvent('vehiclekeys:server:AcquireTempVehicleKeys', GetVehicleNumberPlateText(vehicle))
+        TriggerServerEvent('mm_carkeys:server:acquiretempvehiclekeys', GetVehicleNumberPlateText(vehicle))
     else
         self.isCarjacking = false
         TaskReactAndFleePed(target, cache.ped)
         TaskSetBlockingOfNonTemporaryEvents(target, false)
         ClearPedTasks(target)
-        TriggerServerEvent('hud:server:GainStress', math.random(1, 4))
+        TriggerServerEvent('hud:server:GainStress', Shared.steal.stressIncrease)
         self:CarjackInit()
     end
     SetVehicleUndriveable(vehicle, false)
@@ -104,7 +104,7 @@ function Steal:GrabKey(vehicle)
         useWhileDead = false,
         canCancel = true
     }) then
-        TriggerServerEvent('mm_carkeys:server:AcquireTempVehicleKeys', GetVehicleNumberPlateText(vehicle))
+        TriggerServerEvent('mm_carkeys:server:acquiretempvehiclekeys', GetVehicleNumberPlateText(vehicle))
     else
         lib.notify({
             title = 'Failed',
