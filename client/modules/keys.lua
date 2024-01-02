@@ -21,7 +21,7 @@ function KeyManagement:SetVehicleKeys()
 end
 
 function KeyManagement:GetKeys()
-    lib.callback('mm_carkeys:server:getvhiclekeys', false, function(keysList)
+    lib.callback('mm_carkeys:server:getvehiclekeys', false, function(keysList)
         VehicleKeys.playerTempKeys = keysList
     end)
 end
@@ -75,8 +75,16 @@ RegisterCommand('engine', function()
         local EngineOn = GetIsVehicleEngineRunning(VehicleKeys.currentVehicle)
         if EngineOn then
             SetVehicleEngineOn(VehicleKeys.currentVehicle, false, false, true)
-        else
+            local plate = VehicleKeys.currentVehiclePlate or false
+            if plate and not VehicleKeys.playerKeys[plate] and VehicleKeys.playerTempKeys[plate] then
+                VehicleKeys.playerTempKeys[plate] = nil
+                VehicleKeys:Init()
+            end
+            return
+        end
+        if VehicleKeys.playerKeys[VehicleKeys.currentVehiclePlate] then
             SetVehicleEngineOn(VehicleKeys.currentVehicle, true, true, true)
+            return
         end
     end
 end, false)
@@ -121,6 +129,28 @@ RegisterNetEvent('mm_carkeys:client:removetempkeys', function(plate)
     end
 end)
 
+RegisterNetEvent('mm_carkeys:client:setplayerkey', function(plate, netId)
+    local vehicle = NetworkGetEntityFromNetworkId(netId)
+    if not plate or not netId then
+        return lib.notify({
+            description = 'No Vehicle Data Found',
+            type = 'error'
+        })
+    end
+    local model = GetLabelText(GetDisplayNameFromVehicleModel(GetEntityModel(vehicle)))
+    TriggerServerEvent('mm_carkeys:server:acquirevehiclekeys', plate, model)
+end)
+
+RegisterNetEvent('mm_carkeys:client:removeplayerkey', function(plate)
+    if not plate then
+        return lib.notify({
+            description = 'No Vehicle Plate Found',
+            type = 'error'
+        })
+    end
+    TriggerServerEvent('mm_carkeys:server:removevehiclekeys', plate)
+end)
+
 RegisterNetEvent('mm_carkeys:client:givekeyitem', function()
     if VehicleKeys.currentVehicle == 0 then
         return lib.notify({
@@ -157,8 +187,7 @@ RegisterNetEvent('mm_carkeys:client:removekeyitem', function()
             type = 'error'
         })
     end
-    local model = GetLabelText(GetDisplayNameFromVehicleModel(GetEntityModel(VehicleKeys.currentVehicle)))
-    TriggerServerEvent('mm_carkeys:server:removevehiclekeys', VehicleKeys.currentVehiclePlate, model)
+    TriggerServerEvent('mm_carkeys:server:removevehiclekeys', VehicleKeys.currentVehiclePlate)
 end)
 
 RegisterNetEvent('mm_carkeys:client:stackkeys', function()
