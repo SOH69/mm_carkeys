@@ -1,9 +1,10 @@
 local VehicleKeys = require 'client.interface'
 local Hotwire = require 'client.modules.hotwire'
 local Steal = require 'client.modules.steal'
+local LockPick = require 'client.modules.lockpick'
 
 function VehicleKeys:Init()
-    if self.currentVehicle == 0 then
+    if self.currentVehicle == 0 or not VehicleKeys.isInDrivingSeat then
         if VehicleKeys.showTextUi then
             lib.hideTextUI()
             VehicleKeys.showTextUi = false
@@ -21,6 +22,7 @@ function VehicleKeys:Init()
     elseif self.hasKey and self.showTextUi then
         lib.hideTextUI()
         self.showTextUi = false
+
     end
 end
 
@@ -61,23 +63,79 @@ function VehicleKeys:Thread()
             local wait = 200
             if VehicleKeys.currentVehicle ~= 0 then wait = 500 end
             local entering = GetVehiclePedIsTryingToEnter(cache.ped)
-            local driver = GetPedInVehicleSeat(entering, -1)
             if entering ~= 0 then
                 wait = 500
+                local driver = GetPedInVehicleSeat(entering, -1)
                 if not Shared.playerDraggable and IsPedAPlayer(driver) then
                     SetPedCanBeDraggedOut(driver, false)
                 end
-                if Shared.LockNPCVehicle then
-                    TriggerServerEvent('mm_carkeys:server:setVehLockState', NetworkGetNetworkIdFromEntity(entering), 2)
-                    TaskSmartFleePed(driver, cache.ped, -1, -1, false, false)
-                elseif driver ~= 0 and not IsPedAPlayer(driver) and IsEntityDead(driver) then
-                    Steal:GrabKey(entering)
+                if driver ~= 0 then
+                    if Shared.LockNPCVehicle then
+                        TriggerServerEvent('mm_carkeys:server:setVehLockState', NetworkGetNetworkIdFromEntity(entering), 2)
+                        TaskSmartFleePed(driver, cache.ped, -1, -1, false, false)
+                    end
+                    if not IsPedAPlayer(driver) and IsEntityDead(driver) then
+                        Steal:GrabKey(entering)
+                    end
                 end
             end
             Wait(wait)
         end
     end)
 end
+
+exports('GiveTempKeys', function(plate)
+    if not plate then
+        return lib.notify({
+            title = 'Failed',
+            description = 'No Vehicle Plate Found',
+            type = 'error'
+        })
+    end
+    TriggerServerEvent('mm_carkeys:server:acquiretempvehiclekeys', plate)
+end)
+
+exports('RemoveTempKeys', function(plate)
+    if not plate then
+        return lib.notify({
+            title = 'Failed',
+            description = 'No Vehicle Plate Found',
+            type = 'error'
+        })
+    end
+    TriggerServerEvent('mm_carkeys:server:removetempvehiclekeys', plate)
+end)
+
+exports('GiveKeyItem', function(plate, vehicle)
+    if not plate or not vehicle then
+        return lib.notify({
+            title = 'Failed',
+            description = 'No Vehicle Data Found',
+            type = 'error'
+        })
+    end
+    local model = GetLabelText(GetDisplayNameFromVehicleModel(GetEntityModel(vehicle)))
+    TriggerServerEvent('mm_carkeys:server:acquirevehiclekeys', plate, model)
+end)
+
+exports('RemoveKeyItem', function(plate)
+    if not plate then
+        return lib.notify({
+            title = 'Failed',
+            description = 'No Vehicle Data Found',
+            type = 'error'
+        })
+    end
+    TriggerServerEvent('mm_carkeys:server:removevehiclekeys', plate)
+end)
+
+RegisterNetEvent('lockpicks:UseLockpick', function(isAdvanced)
+    if VehicleKeys.currentVehicle ~= 0 then
+        LockPick:LockPickEngine(isAdvanced)
+    else
+        LockPick:LockPickDoor(isAdvanced)
+    end
+end)
 
 AddEventHandler('onResourceStop', function(resource)
     if GetCurrentResourceName() == resource then
