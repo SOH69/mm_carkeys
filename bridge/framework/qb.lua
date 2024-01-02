@@ -16,7 +16,7 @@ if Shared.Framework == 'qb' then
     RegisterNetEvent('QBCore:Client:OnPlayerLoaded', function()
         playerItems = QBCore.Functions.GetPlayerData().items
         KeyManagement:SetVehicleKeys()
-        VehicleKeys:thread()
+        VehicleKeys:Thread()
         VehicleKeys:Init()
     end)
 

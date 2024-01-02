@@ -12,7 +12,7 @@ if Shared.Framework == 'qbx' then
 
     RegisterNetEvent('QBCore:Client:OnPlayerLoaded', function()
         KeyManagement:SetVehicleKeys()
-        VehicleKeys:thread()
+        VehicleKeys:Thread()
         VehicleKeys:Init()
     end)
 

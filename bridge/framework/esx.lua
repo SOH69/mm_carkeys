@@ -14,7 +14,7 @@ if Shared.Framework == 'esx' then
 
     RegisterNetEvent('esx:playerLoaded', function()
         KeyManagement:SetVehicleKeys()
-        VehicleKeys:thread()
+        VehicleKeys:Thread()
         VehicleKeys:Init()
     end)
 
