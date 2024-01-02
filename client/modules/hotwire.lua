@@ -30,9 +30,9 @@ function Hotwire:HotwireHandler()
             clip = 'machinic_loop_mechandplayer'
         }
     }) then
-        TriggerServerEvent('hud:server:GainStress', math.random(1, 4))
+        TriggerServerEvent('hud:server:GainStress', Shared.hotwire.stressIncrease)
         if (math.random() <= Shared.hotwire.chance) then
-            TriggerServerEvent('mm_carkeys:server:AcquireTempVehicleKeys', VehicleKeys.currentVehiclePlate)
+            TriggerServerEvent('mm_carkeys:server:acquiretempvehiclekeys', VehicleKeys.currentVehiclePlate)
             SetVehicleEngineOn(VehicleKeys.currentVehicle, true, false, true)
             success = true
             return
