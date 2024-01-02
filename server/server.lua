@@ -180,3 +180,5 @@ RegisterNetEvent('mm_carkeys:server:unstackkeys', function()
         Bridge:AddItem(src, 'vehiclekey', info)
     end
 end)
+
+lib.versionCheck('SOH69/mm_carkeys')
