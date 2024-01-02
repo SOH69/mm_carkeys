@@ -24,7 +24,59 @@ function RemoveTempKeys(id, plate)
     TriggerClientEvent('mm_carkeys:client:removetempkeys', id, plate)
 end
 
-lib.callback.register('mm_carkeys:server:getvhiclekeys', function(source)
+exports('GiveTempKeys', function(src, plate)
+    if not plate then
+        local nData = {
+            title = 'Failed',
+            description = 'No Vehicle Plate Found',
+            type = 'error'
+        }
+        TriggerClientEvent('ox_lib:notify', src, nData)
+        return
+    end
+    GiveTempKeys(src, plate)
+end)
+
+exports('RemoveTempKeys', function(src, plate)
+    if not plate then
+        local nData = {
+            title = 'Failed',
+            description = 'No Vehicle Plate Found',
+            type = 'error'
+        }
+        TriggerClientEvent('ox_lib:notify', src, nData)
+        return
+    end
+    RemoveTempKeys(src, plate)
+end)
+
+exports('GiveKeyItem', function(src, plate, netId)
+    if not plate or not netId then
+        local nData = {
+            title = 'Failed',
+            description = 'No Vehicle Data Found',
+            type = 'error'
+        }
+        TriggerClientEvent('ox_lib:notify', src, nData)
+        return
+    end
+    TriggerClientEvent('mm_carkeys:client:setplayerkey', src, plate, netId)
+end)
+
+exports('RemoveKeyItem', function(src, plate)
+    if not plate then
+        local nData = {
+            title = 'Failed',
+            description = 'No Vehicle Data Found',
+            type = 'error'
+        }
+        TriggerClientEvent('ox_lib:notify', src, nData)
+        return
+    end
+    TriggerClientEvent('mm_carkeys:client:removeplayerkey', src, plate)
+end)
+
+lib.callback.register('mm_carkeys:server:getvehiclekeys', function()
     local citizenid = Bridge:GetPlayerCitizenId(id)
     local keysList = {}
     for plate, citizenids in pairs (VehicleList) do
@@ -39,14 +91,18 @@ RegisterNetEvent('mm_carkeys:server:setVehLockState', function(vehNetId, state)
     SetVehicleDoorsLocked(NetworkGetEntityFromNetworkId(vehNetId), state)
 end)
 
-RegisterNetEvent('mm_carkeys:server:AcquireTempVehicleKeys', function(plate)
+RegisterNetEvent('mm_carkeys:server:acquiretempvehiclekeys', function(plate)
     local src = source
     GiveTempKeys(src, plate)
 end)
 
-RegisterNetEvent('mm_carkeys:server:RemoveTempVehicleKeys', function(plate)
+RegisterNetEvent('mm_carkeys:server:removetempvehiclekeys', function(plate)
     local src = source
     RemoveTempKeys(src, plate)
+end)
+
+RegisterNetEvent('mm_carkeys:server:removelockpick', function(item)
+    Bridge:RemoveItem(source, item)
 end)
 
 RegisterNetEvent('mm_carkeys:server:acquirevehiclekeys', function(plate, model)
@@ -60,7 +116,7 @@ RegisterNetEvent('mm_carkeys:server:acquirevehiclekeys', function(plate, model)
 	end
 end)
 
-RegisterNetEvent('mm_carkeys:server:removevehiclekeys', function(plate, model)
+RegisterNetEvent('mm_carkeys:server:removevehiclekeys', function(plate)
     local src = source
     local keys = Bridge:GetPlayerItemsByName(src, 'vehiclekey')
     for _, v in pairs(keys) do
