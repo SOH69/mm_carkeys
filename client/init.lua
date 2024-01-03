@@ -69,12 +69,12 @@ function VehicleKeys:Thread()
                 if not Shared.playerDraggable and IsPedAPlayer(driver) then
                     SetPedCanBeDraggedOut(driver, false)
                 end
-                if driver ~= 0 then
+                if driver ~= 0 and not IsPedAPlayer(driver) then
                     if Shared.LockNPCVehicle then
                         TriggerServerEvent('mm_carkeys:server:setVehLockState', NetworkGetNetworkIdFromEntity(entering), 2)
                         TaskSmartFleePed(driver, cache.ped, -1, -1, false, false)
                     end
-                    if not IsPedAPlayer(driver) and IsEntityDead(driver) then
+                    if IsEntityDead(driver) then
                         Steal:GrabKey(entering)
                     end
                 end
