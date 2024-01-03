@@ -76,6 +76,28 @@ exports('RemoveKeyItem', function(src, plate)
     TriggerClientEvent('mm_carkeys:client:removeplayerkey', src, plate)
 end)
 
+exports('HaveTemporaryKey', function(src, plate)
+    if not plate then
+        return lib.notify({
+            title = 'Failed',
+            description = 'No Vehicle Data Found',
+            type = 'error'
+        })
+    end
+    return lib.callback.await('mm_carkeys:client:havekey', src, 'temp', plate)
+end)
+
+exports('HavePermanentKey', function(src, plate)
+    if not plate then
+        return lib.notify({
+            title = 'Failed',
+            description = 'No Vehicle Data Found',
+            type = 'error'
+        })
+    end
+    return lib.callback.await('mm_carkeys:client:havekey', src, 'perma', plate)
+end)
+
 lib.callback.register('mm_carkeys:server:getvehiclekeys', function()
     local citizenid = Bridge:GetPlayerCitizenId(id)
     local keysList = {}

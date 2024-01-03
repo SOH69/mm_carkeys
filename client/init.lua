@@ -129,6 +129,28 @@ exports('RemoveKeyItem', function(plate)
     TriggerServerEvent('mm_carkeys:server:removevehiclekeys', plate)
 end)
 
+exports('HaveTemporaryKey', function(plate)
+    if not plate then
+        return lib.notify({
+            title = 'Failed',
+            description = 'No Vehicle Data Found',
+            type = 'error'
+        })
+    end
+    return VehicleKeys.playerTempKeys[plate] ~= nil
+end)
+
+exports('HavePermanentKey', function(plate)
+    if not plate then
+        return lib.notify({
+            title = 'Failed',
+            description = 'No Vehicle Data Found',
+            type = 'error'
+        })
+    end
+    return VehicleKeys.playerKeys[plate] ~= nil
+end)
+
 RegisterNetEvent('lockpicks:UseLockpick', function(isAdvanced)
     if VehicleKeys.currentVehicle ~= 0 then
         LockPick:LockPickEngine(isAdvanced)
