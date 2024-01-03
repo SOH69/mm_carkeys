@@ -96,6 +96,14 @@ lib.callback.register('mm_carkeys:client:getplate', function()
     return VehicleKeys.currentVehiclePlate
 end)
 
+lib.callback.register('mm_carkeys:client:havekey', function(type, plate)
+    if type == 'temp' then
+        return VehicleKeys.playerTempKeys[plate] ~= nil
+    elseif type == 'perma' then
+        return VehicleKeys.playerKeys[plate] ~= nil
+    end
+end)
+
 RegisterNetEvent('mm_carkeys:client:addtempkeys', function(plate)
     VehicleKeys.playerTempKeys[plate] = true
     if VehicleKeys.currentVehicle and cache.vehicle then
