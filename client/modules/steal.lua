@@ -31,8 +31,8 @@ end
 
 function Steal:CheckStealStatus(target)
     CreateThread(function()
+        SetVehicleUndriveable(vehicle, true)
         while self.isCarjacking do
-            SetVehicleUndriveable(vehicle, true)
             TaskSetBlockingOfNonTemporaryEvents(target, true)
             local distance = #(GetEntityCoords(cache.ped) - GetEntityCoords(target))
             if IsPedDeadOrDying(target, false) or distance > 7.5 then
@@ -42,7 +42,7 @@ function Steal:CheckStealStatus(target)
                 end
                 break
             end
-            Wait(10)
+            Wait(25)
         end
     end)
 end
@@ -64,12 +64,11 @@ function Steal:CarjackVehicle(target)
     lib.requestAnimDict('missminuteman_1ig_2')
     local stealTime = math.random(Shared.steal.minTime, Shared.steal.maxTime)
     TaskLeaveVehicle(target, vehicle, 256)
-    TaskTurnPedToFaceEntity(target, cache.ped, 3.0)
     self:MakePedFlee(target, vehicle)
     CreateThread(function()
         Wait(350)
         self:CheckStealStatus(target)
-        TaskTurnPedToFaceEntity(target, cache.ped, 3.0)
+        TaskTurnPedToFaceEntity(target, cache.ped, -1)
         TaskPlayAnim(target, "missminuteman_1ig_2", "handsup_base", 8.0, -8.0, -1, 49, 0, false, false, false)
     end)
     if lib.progressBar({
@@ -83,14 +82,17 @@ function Steal:CarjackVehicle(target)
         self.isCarjacking = false
         StopAnimTask(target, "missminuteman_1ig_2", "handsup_base", 1.0)
         lib.requestAnimDict('mp_common')
-        TaskPlayAnim(target, "mp_common", "givetake1_a", 8.0, -8, -1, 12, 1, false, false, false)
-        TaskWanderInArea(target, GetEntityCoords(target), 5.0, 5.0, 5.0)
+        TaskPlayAnim(cache.ped, "mp_common", "givetake1_b", 8.0, -8, -1, 12, 1, false, false, false)
+        TaskPlayAnim(target, "mp_common", "givetake1_b", 8.0, -8, -1, 12, 1, false, false, false)
+        local targetPos = GetEntityCoords(target)
+        TaskWanderInArea(target, targetPos.x, targetPos.y, targetPos.z, 5.0, 5.0, 5.0)
         TriggerServerEvent('hud:server:GainStress', Shared.steal.stressIncrease)
         TriggerServerEvent('mm_carkeys:server:acquiretempvehiclekeys', GetVehicleNumberPlateText(vehicle))
     else
         StopAnimTask(target, "missminuteman_1ig_2", "handsup_base", 1.0)
         self.isCarjacking = false
-        TaskWanderInArea(target, GetEntityCoords(target), 5.0, 5.0, 5.0)
+        local targetPos = GetEntityCoords(target)
+        TaskWanderInArea(target, targetPos.x, targetPos.y, targetPos.z, 5.0, 5.0, 5.0)
         TriggerServerEvent('hud:server:GainStress', Shared.steal.stressIncrease)
     end
     self:ToggleCooldown()
