@@ -3,8 +3,17 @@ local Utils = require 'client.modules.utils'
 
 local Steal = {
     isCarjacking = false,
+    canCarjack = true,
     isRobbingKeys = false
 }
+
+function Steal:ToggleCooldown()
+    CreateThread(function()
+        Wait(5000)
+        self.canCarjack = true
+        self:CarjackInit()
+    end)
+end
 
 function Steal:MakePedFlee(target, vehicle)
     local occupants = Utils:GetPedsInVehicle(vehicle)
@@ -39,13 +48,23 @@ function Steal:CheckStealStatus(target)
 end
 
 function Steal:CarjackVehicle(target)
-    if self.isCarjacking then return end
+    if self.isCarjacking or not self.canCarjack then return end
     self.isCarjacking = true
+    self.canCarjack = false
+    local vehicle = GetVehiclePedIsUsing(target)
+    local carjackChance = Shared.steal.chance[tostring(GetWeapontypeGroup(cache.weapon))] or 0.5
+    local chance = math.random()
+    if chance > carjackChance then
+        TriggerServerEvent('mm_carkeys:server:setVehLockState', NetworkGetNetworkIdFromEntity(vehicle), 2)
+        TaskReactAndFleePed(target, cache.ped)
+        self.isCarjacking = false
+        self:ToggleCooldown()
+        return
+    end
     lib.requestAnimDict('missminuteman_1ig_2')
     local stealTime = math.random(Shared.steal.minTime, Shared.steal.maxTime)
-    local vehicle = GetVehiclePedIsUsing(target)
-    SetVehicleCanBeUsedByFleeingPeds(vehicle, false)
     TaskLeaveVehicle(target, vehicle, 256)
+    TaskTurnPedToFaceEntity(target, cache.ped, 3.0)
     self:MakePedFlee(target, vehicle)
     CreateThread(function()
         Wait(350)
@@ -61,34 +80,20 @@ function Steal:CarjackVehicle(target)
         useWhileDead = false,
         canCancel = true
     }) then
-        local carjackChance = Shared.steal.chance[GetWeapontypeGroup(cache.weapon)] or 0.5
         self.isCarjacking = false
-        TaskSetBlockingOfNonTemporaryEvents(target, false)
-        ClearPedTasks(target)
-        Wait(1000)
-        TaskReactAndFleePed(target, cache.ped)
-        TriggerServerEvent('hud:server:GainStress', Shared.steal.stressIncrease)
-        if math.random() <= carjackChance then
-            lib.notify({
-                title = 'Failed',
-                description = 'Cannot retrive the keys!',
-                type = 'error'
-            })
-            TriggerServerEvent('hud:server:GainStress', Shared.steal.stressIncrease)
-            self:CarjackInit()
-            return
-        end
+        StopAnimTask(target, "missminuteman_1ig_2", "handsup_base", 1.0)
         lib.requestAnimDict('mp_common')
         TaskPlayAnim(target, "mp_common", "givetake1_a", 8.0, -8, -1, 12, 1, false, false, false)
+        TaskWanderInArea(target, GetEntityCoords(target), 5.0, 5.0, 5.0)
+        TriggerServerEvent('hud:server:GainStress', Shared.steal.stressIncrease)
         TriggerServerEvent('mm_carkeys:server:acquiretempvehiclekeys', GetVehicleNumberPlateText(vehicle))
     else
+        StopAnimTask(target, "missminuteman_1ig_2", "handsup_base", 1.0)
         self.isCarjacking = false
-        TaskReactAndFleePed(target, cache.ped)
-        TaskSetBlockingOfNonTemporaryEvents(target, false)
-        ClearPedTasks(target)
+        TaskWanderInArea(target, GetEntityCoords(target), 5.0, 5.0, 5.0)
         TriggerServerEvent('hud:server:GainStress', Shared.steal.stressIncrease)
-        self:CarjackInit()
     end
+    self:ToggleCooldown()
     SetVehicleUndriveable(vehicle, false)
 end
 
@@ -117,7 +122,7 @@ end
 
 function Steal:CarjackInit()
     CreateThread(function()
-        while VehicleKeys.currentWeapon do
+        while VehicleKeys.currentWeapon and VehicleKeys.currentVehicle == 0 do
             local aiming, target = GetEntityPlayerIsFreeAimingAt(cache.playerId)
             if aiming and (target ~= nil and target ~= 0) then
                 if DoesEntityExist(target) and IsPedInAnyVehicle(target, false) and not IsEntityDead(target) and not IsPedAPlayer(target) then
@@ -127,6 +132,7 @@ function Steal:CarjackInit()
                         local targetpos = GetEntityCoords(target, true)
                         if #(pos - targetpos) < 5.0 then
                             self:CarjackVehicle(target)
+                            break
                         end
                     end
                 end
