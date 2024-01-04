@@ -6,6 +6,8 @@ elseif GetResourceState('qbx_core') == 'started' then -- change your core script
     Shared.Framework = 'qbx' -- dont touch this
 elseif GetResourceState('es_extended') == 'started' then -- change your core script
     Shared.Framework = 'esx' -- dont touch this
+elseif GetResourceState('ox_core') == 'started' then -- change your core script
+    Shared.Framework = 'ox' -- dont touch this
 else
     Shared.Framework = false
     Shared.Ready = false

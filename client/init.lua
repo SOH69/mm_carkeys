@@ -22,7 +22,6 @@ function VehicleKeys:Init()
     elseif self.hasKey and self.showTextUi then
         lib.hideTextUI()
         self.showTextUi = false
-
     end
 end
 

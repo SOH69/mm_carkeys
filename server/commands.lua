@@ -1,7 +1,7 @@
 local Bridge = require 'server.bridge'
 
 lib.addCommand('givetempkeys', {
-    help = 'Remove Temporary Keys',
+    help = 'Give Temporary Keys',
     params = {
         {
             name = 'target',
@@ -72,7 +72,7 @@ lib.addCommand('givekeys', {
 }, function(source)
     local src = source
     local playerJob = Bridge:GetPlayerJob(src)
-    if playerJob == "police" or playerJob == "cardealer" or IsPlayerAceAllowed(src, "admin") then
+    if playerJob == "police" or playerJob == "cardealer" or IsPlayerAceAllowed(src, "admin") or playerJob['police'] or playerJob['cardealer'] then
         TriggerClientEvent('mm_carkeys:client:givekeyitem', src)
         return
     end
@@ -90,7 +90,7 @@ lib.addCommand('removekeys', {
 }, function(source)
     local src = source
     local playerJob = Bridge:GetPlayerJob(src)
-    if playerJob == "police" or playerJob == "cardealer" or IsPlayerAceAllowed(src, "admin") then
+    if playerJob == "police" or playerJob == "cardealer" or IsPlayerAceAllowed(src, "admin") or playerJob['police'] or playerJob['cardealer'] then
         TriggerClientEvent('mm_carkeys:client:removekeyitem', src)
         return
     end

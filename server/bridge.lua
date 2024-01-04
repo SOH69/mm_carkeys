@@ -12,6 +12,9 @@ function Bridge:GetPlayerCitizenId(id)
     elseif Shared.Framework == 'esx' then
         local xPlayer = ESX.GetPlayerFromId(id)
         return xPlayer.getIdentifier()
+    elseif Shared.Framework == 'ox' then
+        local player = Ox.GetPlayer(id)
+        return player.charId
     end
 end
 
@@ -20,6 +23,8 @@ function Bridge:GetPlayer(id)
         return QBCore.Functions.GetPlayer(id)
     elseif Shared.Framework == 'esx' then
         return ESX.GetPlayerFromId(id)
+    elseif Shared.Framework == 'ox' then
+        return Ox.GetPlayer(id)
     end
 end
 
@@ -30,6 +35,9 @@ function Bridge:GetPlayerJob(id)
     elseif Shared.Framework == 'esx' then
         local xPlayer = ESX.GetPlayerFromId(id)
         return xPlayer.getJob().name
+    elseif Shared.Framework == 'ox' then
+        local player = Ox.GetPlayer(id)
+        return player.getGroups()
     end
 end
 

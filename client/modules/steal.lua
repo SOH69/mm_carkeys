@@ -85,9 +85,19 @@ function Steal:CarjackVehicle(target)
         TaskPlayAnim(cache.ped, "mp_common", "givetake1_b", 8.0, -8, -1, 12, 1, false, false, false)
         TaskPlayAnim(target, "mp_common", "givetake1_b", 8.0, -8, -1, 12, 1, false, false, false)
         local targetPos = GetEntityCoords(target)
-        TaskWanderInArea(target, targetPos.x, targetPos.y, targetPos.z, 5.0, 5.0, 5.0)
+        TaskSmartFleePed(target, cache.ped, 50, -1, false, false)
         TriggerServerEvent('hud:server:GainStress', Shared.steal.stressIncrease)
-        TriggerServerEvent('mm_carkeys:server:acquiretempvehiclekeys', GetVehicleNumberPlateText(vehicle))
+        TriggerServerEvent('mm_carkeys:server:setVehLockState', NetworkGetNetworkIdFromEntity(vehicle), 1)
+
+        local plate = GetVehicleNumberPlateText(vehicle)
+        local modelName = GetDisplayNameFromVehicleModel(GetEntityModel(vehicle))
+        if Shared.steal.getKey then
+            TriggerServerEvent('mm_carkeys:server:acquirevehiclekeys', plate, modelName)
+        else
+            TriggerServerEvent('mm_carkeys:server:acquiretempvehiclekeys', plate)
+        end
+        
+        
     else
         StopAnimTask(target, "missminuteman_1ig_2", "handsup_base", 1.0)
         self.isCarjacking = false
