@@ -35,6 +35,7 @@ function Hotwire:HotwireHandler()
             TriggerServerEvent('mm_carkeys:server:acquiretempvehiclekeys', VehicleKeys.currentVehiclePlate)
             SetVehicleEngineOn(VehicleKeys.currentVehicle, true, false, true)
             success = true
+            self.isHotwiring = false
             return
         end
         lib.notify({
