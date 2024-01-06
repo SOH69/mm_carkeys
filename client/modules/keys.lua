@@ -33,6 +33,9 @@ function KeyManagement:ToggleVehicleLock(vehicle)
     NetworkRequestControlOfEntity(vehicle)
     local vehLockStatus = GetVehicleDoorLockStatus(vehicle)
     if vehLockStatus == 1 then
+        for i = 0, 5 do
+            SetVehicleDoorShut(vehicle, i, true)
+        end
         TriggerServerEvent('mm_carkeys:server:setVehLockState', NetworkGetNetworkIdFromEntity(vehicle), 2)
         lib.notify({
             description = 'Locked Vehicle',
