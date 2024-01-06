@@ -61,7 +61,7 @@ RegisterCommand('togglelocks', function()
     if VehicleKeys.currentVehicle == 0 then
         local vehicle = lib.getClosestVehicle(GetEntityCoords(cache.ped), 3.0, false)
         local plate = GetVehicleNumberPlateText(vehicle)
-        if VehicleKeys.playerKeys[plate] then
+        if VehicleKeys.playerKeys[plate] or VehicleKeys.playerTempKeys[plate] then
             KeyManagement:ToggleVehicleLock(vehicle)
         end
         return
