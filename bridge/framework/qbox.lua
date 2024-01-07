@@ -1,12 +1,14 @@
 if Shared.Framework == 'qbx' then
     local KeyManagement = require 'client.modules.keys'
     local VehicleKeys = require 'client.interface'
+    local Utils = require 'client.modules.utils'
 
     local function setupData()
         VehicleKeys.currentVehicle = cache.vehicle and cache.vehicle or 0
         if cache.vehicle then
             VehicleKeys.isInDrivingSeat = GetPedInVehicleSeat(value, -1) == cache.ped
-            VehicleKeys.currentVehiclePlate = GetVehicleNumberPlateText(value)
+            local plate = GetVehicleNumberPlateText(value)
+            VehicleKeys.currentVehiclePlate = Utils:RemoveSpecialCharacter(plate)
         end
     end
 
@@ -14,6 +16,7 @@ if Shared.Framework == 'qbx' then
         KeyManagement:SetVehicleKeys()
         VehicleKeys:Thread()
         VehicleKeys:Init()
+        KeyManagement:GetKeys()
     end)
 
     AddEventHandler('onResourceStart', function(resource)

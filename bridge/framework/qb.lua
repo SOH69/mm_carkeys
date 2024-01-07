@@ -1,6 +1,7 @@
 if Shared.Framework == 'qb' then
     local KeyManagement = require 'client.modules.keys'
     local VehicleKeys = require 'client.interface'
+    local Utils = require 'client.modules.utils'
     local playerItems = {}
 
     local QBCore = exports['qb-core']:GetCoreObject()
@@ -9,7 +10,8 @@ if Shared.Framework == 'qb' then
         VehicleKeys.currentVehicle = cache.vehicle and cache.vehicle or 0
         if cache.vehicle then
             VehicleKeys.isInDrivingSeat = GetPedInVehicleSeat(cache.vehicle, -1) == cache.ped
-            VehicleKeys.currentVehiclePlate = GetVehicleNumberPlateText(cache.vehicle)
+            local plate = GetVehicleNumberPlateText(cache.vehicle)
+            VehicleKeys.currentVehiclePlate = Utils:RemoveSpecialCharacter(plate)
         end
     end
 
@@ -18,6 +20,7 @@ if Shared.Framework == 'qb' then
         KeyManagement:SetVehicleKeys()
         VehicleKeys:Thread()
         VehicleKeys:Init()
+        KeyManagement:GetKeys()
     end)
 
     AddEventHandler('onResourceStart', function(resource)

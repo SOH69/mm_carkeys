@@ -1,5 +1,6 @@
 local VehicleKeys = require 'client.interface'
 local InventoryBridge = require 'bridge.inventory.client'
+local Utils = require 'client.modules.utils'
 
 local KeyManagement = {
     getItemInfo = Shared.Inventory == 'qb' and function(item) return item.info end or function(item) return item.metadata end
@@ -8,13 +9,14 @@ local KeyManagement = {
 function KeyManagement:SetVehicleKeys()
     VehicleKeys.playerKeys = {}
     local PlayerItems = InventoryBridge:GetPlayerItems()
+    if not PlayerItems then return end
     for _, item in pairs(PlayerItems) do
         local itemInfo = self.getItemInfo(item)
         if itemInfo and item.name == "vehiclekey" then
-            VehicleKeys.playerKeys[itemInfo.plate] = true
+            VehicleKeys.playerKeys[#VehicleKeys.playerKeys+1] = Utils:RemoveSpecialCharacter(itemInfo.plate)
         elseif itemInfo and item.name == "keybag" then
             for _,v in pairs(itemInfo.plates) do
-                VehicleKeys.playerKeys[v.plate] = true
+                VehicleKeys.playerKeys[#VehicleKeys.playerKeys+1] = Utils:RemoveSpecialCharacter(v.plate)
             end
         end
     end
@@ -58,12 +60,12 @@ RegisterCommand('togglelocks', function()
     if VehicleKeys.currentVehicle == 0 then
         local vehicle = lib.getClosestVehicle(GetEntityCoords(cache.ped), 3.0, false)
         local plate = GetVehicleNumberPlateText(vehicle)
-        if VehicleKeys.playerKeys[plate] then
+        if lib.table.contains(VehicleKeys.playerKeys, Utils:RemoveSpecialCharacter(plate)) then
             KeyManagement:ToggleVehicleLock(vehicle)
         end
         return
     end
-    if VehicleKeys.playerKeys[VehicleKeys.currentVehiclePlate] then
+    if lib.table.contains(VehicleKeys.playerKeys, VehicleKeys.currentVehiclePlate) then
         KeyManagement:ToggleVehicleLock(VehicleKeys.currentVehicle)
     end
 end, false)
@@ -76,13 +78,13 @@ RegisterCommand('engine', function()
         if EngineOn then
             SetVehicleEngineOn(VehicleKeys.currentVehicle, false, false, true)
             local plate = VehicleKeys.currentVehiclePlate or false
-            if plate and not VehicleKeys.playerKeys[plate] and VehicleKeys.playerTempKeys[plate] then
+            if plate and not lib.table.contains(VehicleKeys.playerKeys, VehicleKeys.currentVehiclePlate) and lib.table.contains(VehicleKeys.playerTempKeys, VehicleKeys.currentVehiclePlate) then
                 VehicleKeys.playerTempKeys[plate] = nil
                 VehicleKeys:Init()
             end
             return
         end
-        if VehicleKeys.playerKeys[VehicleKeys.currentVehiclePlate] then
+        if lib.table.contains(VehicleKeys.playerKeys, VehicleKeys.currentVehiclePlate) then
             SetVehicleEngineOn(VehicleKeys.currentVehicle, true, true, true)
             return
         end
@@ -98,9 +100,9 @@ end)
 
 lib.callback.register('mm_carkeys:client:havekey', function(type, plate)
     if type == 'temp' then
-        return VehicleKeys.playerTempKeys[plate] ~= nil
+        return lib.table.contains(VehicleKeys.playerTempKeys, Utils:RemoveSpecialCharacter(plate))
     elseif type == 'perma' then
-        return VehicleKeys.playerKeys[plate] ~= nil
+        return lib.table.contains(VehicleKeys.playerKeys, Utils:RemoveSpecialCharacter(plate))
     end
 end)
 
@@ -138,7 +140,7 @@ RegisterNetEvent('mm_carkeys:client:removetempkeys', function(plate)
 end)
 
 RegisterNetEvent('mm_carkeys:client:setplayerkey', function(plate, netId)
-    local vehicle = NetworkGetEntityFromNetworkId(netId)
+    local vehicle = netId
     if not plate or not netId then
         return lib.notify({
             description = 'No Vehicle Data Found',

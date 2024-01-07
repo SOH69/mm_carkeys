@@ -3,10 +3,15 @@ local Bridge = require 'server.bridge'
 local VehicleList = {}
 local getItemInfo = Shared.Inventory == 'qb' and function(item) return item.info end or function(item) return item.metadata end
 
+local function RemoveSpecialCharacter(txt)
+    return txt:gsub("%W", "")
+end
+
 function GiveTempKeys(id, plate)
     local citizenid = Bridge:GetPlayerCitizenId(id)
-    if not VehicleList[plate] then VehicleList[plate] = {} end
-    VehicleList[plate][citizenid] = true
+    if not VehicleList[citizenid] then VehicleList[citizenid] = {} end
+    plate = RemoveSpecialCharacter(plate)
+    table.insert(VehicleList[citizenid], plate)
     local ndata = {
         title = 'Recieved',
         description = 'You got temporary key to the vehicle',
@@ -18,8 +23,9 @@ end
 
 function RemoveTempKeys(id, plate)
     local citizenid = Bridge:GetPlayerCitizenId(id)
-    if VehicleList[plate] and VehicleList[plate][citizenid] then
-        VehicleList[plate][citizenid] = nil
+    plate = RemoveSpecialCharacter(plate)
+    if VehicleList[citizenid] and VehicleList[citizenid][plate] then
+        table.remove(VehicleList[citizenid], plate)
     end
     TriggerClientEvent('mm_carkeys:client:removetempkeys', id, plate)
 end
@@ -98,15 +104,9 @@ exports('HavePermanentKey', function(src, plate)
     return lib.callback.await('mm_carkeys:client:havekey', src, 'perma', plate)
 end)
 
-lib.callback.register('mm_carkeys:server:getvehiclekeys', function()
-    local citizenid = Bridge:GetPlayerCitizenId(id)
-    local keysList = {}
-    for plate, citizenids in pairs (VehicleList) do
-        if citizenids[citizenid] then
-            keysList[plate] = true
-        end
-    end
-    return keysList
+lib.callback.register('mm_carkeys:server:getvehiclekeys', function(source)
+    local citizenid = Bridge:GetPlayerCitizenId(source)
+    return VehicleList[citizenid] or {}
 end)
 
 RegisterNetEvent('mm_carkeys:server:setVehLockState', function(vehNetId, state)
