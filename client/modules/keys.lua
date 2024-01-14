@@ -78,13 +78,12 @@ RegisterCommand('engine', function()
         if EngineOn then
             SetVehicleEngineOn(VehicleKeys.currentVehicle, false, false, true)
             local plate = VehicleKeys.currentVehiclePlate or false
-            if plate and not lib.table.contains(VehicleKeys.playerKeys, VehicleKeys.currentVehiclePlate) and lib.table.contains(VehicleKeys.playerTempKeys, VehicleKeys.currentVehiclePlate) then
-                VehicleKeys.playerTempKeys[plate] = nil
-                VehicleKeys:Init()
+            if plate then
+                VehicleKeys.playerTempKeys[plate]  = true
             end
             return
         end
-        if lib.table.contains(VehicleKeys.playerKeys, VehicleKeys.currentVehiclePlate) then
+        if VehicleKeys.hasKey then
             SetVehicleEngineOn(VehicleKeys.currentVehicle, true, true, true)
             return
         end
