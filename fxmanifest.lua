@@ -3,7 +3,7 @@ game 'gta5'
 use_experimental_fxv2_oal 'yes'
 
 author "Master Mind"
-version '1.0.4'
+version '1.0.5'
 
 lua54 'yes'
 
