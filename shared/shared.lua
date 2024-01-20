@@ -1,6 +1,7 @@
 Shared = {
     LockNPCVehicle = true, -- lock all npc vehicles
     playerDraggable = true, -- allow players to drag other players
+    keepVehicleEngineOn = true, -- keep the engine on when exiting a vehicle
     steal = {
         available = true, -- allow players to carjack vehicles
         label = 'Stealing Vehicle...',

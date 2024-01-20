@@ -23,7 +23,6 @@ function VehicleKeys:Init()
     elseif self.hasKey and self.showTextUi then
         lib.hideTextUI()
         self.showTextUi = false
-
     end
 end
 
@@ -36,9 +35,13 @@ if Shared.Ready then
             local plate = GetVehicleNumberPlateText(value)
             VehicleKeys.currentVehiclePlate = Utils:RemoveSpecialCharacter(plate)
         else
+            if Shared.keepVehicleEngineOn and VehicleKeys.isInDrivingSeat and VehicleKeys.shutDownEngine then
+                SetVehicleEngineOn(cache.vehicle, true, true, false)
+            end
             VehicleKeys.currentVehicle = 0
             VehicleKeys.isInDrivingSeat = false
             VehicleKeys.currentVehiclePlate = false
+            VehicleKeys.shutDownEngine = false
             VehicleKeys:Thread()
         end
         VehicleKeys:Init()
