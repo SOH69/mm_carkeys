@@ -8,6 +8,7 @@ local VehicleKeys = {
     hasKey = false,
     currentVehiclePlate = false,
     currentWeapon = false,
+    shutDownEngine = false
 }
 
 return VehicleKeys

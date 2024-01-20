@@ -77,14 +77,12 @@ RegisterCommand('engine', function()
         local EngineOn = GetIsVehicleEngineRunning(VehicleKeys.currentVehicle)
         if EngineOn then
             SetVehicleEngineOn(VehicleKeys.currentVehicle, false, false, true)
-            local plate = VehicleKeys.currentVehiclePlate or false
-            if plate then
-                VehicleKeys.playerTempKeys[plate]  = true
-            end
+            VehicleKeys.shutDownEngine = true
             return
         end
         if VehicleKeys.hasKey then
             SetVehicleEngineOn(VehicleKeys.currentVehicle, true, true, true)
+            VehicleKeys.shutDownEngine = false
             return
         end
     end
@@ -106,16 +104,12 @@ lib.callback.register('mm_carkeys:client:havekey', function(type, plate)
 end)
 
 RegisterNetEvent('mm_carkeys:client:addtempkeys', function(plate)
-    VehicleKeys.playerTempKeys[plate] = true
+    VehicleKeys.playerTempKeys[#VehicleKeys.playerTempKeys+1] = Utils:RemoveSpecialCharacter(plate)
     if VehicleKeys.currentVehicle and cache.vehicle then
         local vehicleplate = GetVehicleNumberPlateText(cache.vehicle)
         if VehicleKeys.currentVehiclePlate == vehicleplate then
-            VehicleKeys.hasKey = true
+            VehicleKeys:Init()
             SetVehicleEngineOn(VehicleKeys.currentVehicle, true, false, true)
-            if VehicleKeys.showTextUi then
-                lib.hideTextUI()
-                VehicleKeys.showTextUi = false
-            end
         end
     end
 end)
