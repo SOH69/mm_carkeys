@@ -80,12 +80,12 @@ RegisterCommand('engine', function()
         local EngineOn = GetIsVehicleEngineRunning(VehicleKeys.currentVehicle)
         if EngineOn then
             SetVehicleEngineOn(VehicleKeys.currentVehicle, false, false, true)
-            VehicleKeys.shutDownEngine = true
+            VehicleKeys.isEngineRunning = false
             return
         end
         if VehicleKeys.hasKey then
             SetVehicleEngineOn(VehicleKeys.currentVehicle, true, true, true)
-            VehicleKeys.shutDownEngine = false
+            VehicleKeys.isEngineRunning = true
             return
         end
     end
@@ -113,6 +113,7 @@ RegisterNetEvent('mm_carkeys:client:addtempkeys', function(plate)
         if VehicleKeys.currentVehiclePlate == vehicleplate then
             VehicleKeys:Init()
             SetVehicleEngineOn(VehicleKeys.currentVehicle, true, false, true)
+            VehicleKeys.isEngineRunning = true
         end
     end
 end)
@@ -124,6 +125,7 @@ RegisterNetEvent('mm_carkeys:client:removetempkeys', function(plate)
         if VehicleKeys.currentVehiclePlate == vehicleplate then
             VehicleKeys.hasKey = false
             SetVehicleEngineOn(VehicleKeys.currentVehicle, false, false, true)
+            VehicleKeys.isEngineRunning = false
             if not VehicleKeys.showTextUi then
                 lib.showTextUI('Hotwire Vehicle', {
                     position = "left-center",

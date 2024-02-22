@@ -34,6 +34,7 @@ function Hotwire:HotwireHandler()
         if (math.random() <= Shared.hotwire.chance) then
             TriggerServerEvent('mm_carkeys:server:acquiretempvehiclekeys', VehicleKeys.currentVehiclePlate)
             SetVehicleEngineOn(VehicleKeys.currentVehicle, true, false, true)
+            VehicleKeys.isEngineRunning = true
             success = true
             self.isHotwiring = false
             return
@@ -64,6 +65,7 @@ function Hotwire:SetupHotwire()
     CreateThread(function()
         while VehicleKeys.currentVehicle ~= 0 and not VehicleKeys.hasKey do
             SetVehicleEngineOn(VehicleKeys.currentVehicle, false, false, true)
+            VehicleKeys.isEngineRunning = false
             if IsControlJustPressed(0, 74) then
                 self:HotwireHandler()
             end

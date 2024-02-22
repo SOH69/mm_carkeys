@@ -61,6 +61,7 @@ function LockPick:LockPickEngine(isAdvanced)
     if result then
         TriggerServerEvent('mm_carkeys:server:acquiretempvehiclekeys', VehicleKeys.currentVehiclePlate)
         SetVehicleEngineOn(VehicleKeys.currentVehicle, true, true, true)
+        VehicleKeys.isEngineRunning = true
         return
     end
     SetVehicleAlarm(VehicleKeys.currentVehicle, true)

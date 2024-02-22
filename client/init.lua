@@ -35,13 +35,13 @@ if Shared.Ready then
             local plate = GetVehicleNumberPlateText(value)
             VehicleKeys.currentVehiclePlate = Utils:RemoveSpecialCharacter(plate)
         else
-            if Shared.keepVehicleEngineOn and VehicleKeys.isInDrivingSeat and not VehicleKeys.shutDownEngine then
+            if Shared.keepVehicleEngineOn and VehicleKeys.isInDrivingSeat and VehicleKeys.isEngineRunning then
                 SetVehicleEngineOn(cache.vehicle, true, true, false)
+                VehicleKeys.isEngineRunning = false
             end
             VehicleKeys.currentVehicle = 0
             VehicleKeys.isInDrivingSeat = false
             VehicleKeys.currentVehiclePlate = false
-            VehicleKeys.shutDownEngine = false
             VehicleKeys:Thread()
         end
         VehicleKeys:Init()
