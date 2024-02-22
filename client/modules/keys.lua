@@ -35,13 +35,15 @@ function KeyManagement:ToggleVehicleLock(vehicle)
     NetworkRequestControlOfEntity(vehicle)
     local vehLockStatus = GetVehicleDoorLockStatus(vehicle)
     if vehLockStatus == 1 then
-        TriggerServerEvent('mm_carkeys:server:setVehLockState', NetworkGetNetworkIdFromEntity(vehicle), 2)
+        TriggerServerEvent('mm_carkeys:server:setVehLockState', NetworkGetNetworkIdFromEntity(vehicle), 4)
+        SetVehicleDoorsLockedForAllPlayers(vehicle, true)
         lib.notify({
             description = 'Locked Vehicle',
             type = 'error'
         })
     else
         TriggerServerEvent('mm_carkeys:server:setVehLockState', NetworkGetNetworkIdFromEntity(vehicle), 1)
+        SetVehicleDoorsLockedForAllPlayers(vehicle, false)
         lib.notify({
             description = 'Unlocked Vehicle',
             type = 'success'
@@ -59,6 +61,7 @@ end
 RegisterCommand('togglelocks', function()
     if VehicleKeys.currentVehicle == 0 then
         local vehicle = lib.getClosestVehicle(GetEntityCoords(cache.ped), 3.0, false)
+        if not vehicle then return end
         local plate = GetVehicleNumberPlateText(vehicle)
         if lib.table.contains(VehicleKeys.playerKeys, Utils:RemoveSpecialCharacter(plate)) then
             KeyManagement:ToggleVehicleLock(vehicle)
