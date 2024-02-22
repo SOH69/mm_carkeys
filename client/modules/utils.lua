@@ -25,6 +25,7 @@ function Utils:GetPedsInVehicle(vehicle)
 end
 
 function Utils:RemoveSpecialCharacter(txt)
+    if not txt then return 'undefined' end
     return txt:gsub("%W", "")
 end
 
