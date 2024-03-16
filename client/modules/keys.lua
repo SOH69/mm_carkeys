@@ -107,11 +107,12 @@ lib.callback.register('mm_carkeys:client:havekey', function(type, plate)
 end)
 
 RegisterNetEvent('mm_carkeys:client:addtempkeys', function(plate)
-    VehicleKeys.playerTempKeys[#VehicleKeys.playerTempKeys+1] = Utils:RemoveSpecialCharacter(plate)
+    plate = Utils:RemoveSpecialCharacter(plate)
+    VehicleKeys.playerTempKeys[#VehicleKeys.playerTempKeys+1] = plate
     if VehicleKeys.currentVehicle and cache.vehicle then
-        local vehicleplate = GetVehicleNumberPlateText(cache.vehicle)
-        if VehicleKeys.currentVehiclePlate == vehicleplate then
-            VehicleKeys:Init()
+        local vehicleplate = Utils:RemoveSpecialCharacter(GetVehicleNumberPlateText(cache.vehicle))
+        if vehicleplate == plate then
+            VehicleKeys:Init(plate)
             SetVehicleEngineOn(VehicleKeys.currentVehicle, true, false, true)
             VehicleKeys.isEngineRunning = true
         end

@@ -4,7 +4,8 @@ local Steal = require 'client.modules.steal'
 local LockPick = require 'client.modules.lockpick'
 local Utils = require 'client.modules.utils'
 
-function VehicleKeys:Init()
+function VehicleKeys:Init(plate)
+    if plate then self.currentVehiclePlate = plate end
     if self.currentVehicle == 0 or not VehicleKeys.isInDrivingSeat then
         if VehicleKeys.showTextUi then
             lib.hideTextUI()
